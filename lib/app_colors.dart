@@ -56,34 +56,34 @@ class AppColorTheme extends ThemeExtension<AppColorTheme> {
   });
 
   static AppColorTheme get light => AppColorTheme(
-        primary: AppColors.primary,
-        primaryDark: AppColors.primaryDark,
-        primaryContainer: AppColors.primaryContainer,
-        softAccent: AppColors.softAccent,
-        background: AppColors.background,
-        surface: AppColors.surface,
-        surfaceSoft: AppColors.surfaceSoft,
-        scaffoldBackground: AppColors.scaffoldBackground,
-        border: AppColors.border,
-        textPrimary: AppColors.textPrimary,
-        textSecondary: AppColors.textSecondary,
-        textOnPrimary: AppColors.textOnPrimary,
-      );
+    primary: AppColors.primary,
+    primaryDark: AppColors.primaryDark,
+    primaryContainer: AppColors.primaryContainer,
+    softAccent: AppColors.softAccent,
+    background: AppColors.background,
+    surface: AppColors.surface,
+    surfaceSoft: AppColors.surfaceSoft,
+    scaffoldBackground: AppColors.scaffoldBackground,
+    border: AppColors.border,
+    textPrimary: AppColors.textPrimary,
+    textSecondary: AppColors.textSecondary,
+    textOnPrimary: AppColors.textOnPrimary,
+  );
 
   static AppColorTheme get dark => AppColorTheme(
-        primary: Color(0xFF7FB069),
-        primaryDark: Color(0xFF648050),
-        primaryContainer: Color(0xFFA5B88A),
-        softAccent: Color(0xFF99AC7B),
-        background: Color(0xFF1F2421),
-        surface: Color(0xFF2A3128),
-        surfaceSoft: Color(0xFF3A4835),
-        scaffoldBackground: Color(0xFF4A6041),
-        border: Color(0xFF5A6B50),
-        textPrimary: Color(0xFFFFFFFF),
-        textSecondary: Color(0xFFD4E5B4),
-        textOnPrimary: Color(0xFF1F2421),
-      );
+    primary: Color(0xFF7FB069),
+    primaryDark: Color(0xFF648050),
+    primaryContainer: Color(0xFFA5B88A),
+    softAccent: Color(0xFF99AC7B),
+    background: Color(0xFF1F2421),
+    surface: Color(0xFF2A3128),
+    surfaceSoft: Color(0xFF3A4835),
+    scaffoldBackground: Color(0xFF4A6041),
+    border: Color(0xFF5A6B50),
+    textPrimary: Color(0xFFFFFFFF),
+    textSecondary: Color(0xFFD4E5B4),
+    textOnPrimary: Color(0xFF1F2421),
+  );
 
   @override
   ThemeExtension<AppColorTheme> copyWith({
@@ -117,10 +117,7 @@ class AppColorTheme extends ThemeExtension<AppColorTheme> {
   }
 
   @override
-  ThemeExtension<AppColorTheme> lerp(
-    covariant ThemeExtension<AppColorTheme>? other,
-    double t,
-  ) {
+  ThemeExtension<AppColorTheme> lerp(covariant ThemeExtension<AppColorTheme>? other, double t) {
     if (other is! AppColorTheme) {
       return this;
     }
