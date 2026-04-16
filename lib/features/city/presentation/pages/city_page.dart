@@ -1,4 +1,5 @@
 import 'package:bolivia_tourism_app/config/routing/router.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../app_colors.dart';
@@ -18,15 +19,30 @@ class CityPage extends StatelessWidget {
         children: [
           Stack(
             children: [
-              Container(height: 180, color: const Color(0xFF6B8FD9)),
+              Container(
+                height: 180,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: NetworkImage(
+                      kIsWeb
+                          ? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=300&fit=crop'
+                          : 'https://i.natgeofe.com/n/857a969e-9fe6-4b5e-959f-157ad9fdf7f9/reflection-salar-de-uyuni-bolivia.jpg',
+                    ),
+                    fit: BoxFit.cover,
+                  ),
+                  color: const Color(0xFF87CEEB),
+                ),
+              ),
               Positioned(
-                // top: AppDimens.spacingMedium,
-                top: MediaQuery.of(context).padding.top,
+                top: MediaQuery.of(context).padding.top + AppDimens.spacingSmall,
                 left: AppDimens.spacingMedium,
                 child: GestureDetector(
                   onTap: () => Navigator.pop(context),
                   child: Container(
-                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(50)),
+                    decoration: BoxDecoration(
+                      color: context.colors.background,
+                      borderRadius: BorderRadius.circular(50),
+                    ),
                     padding: const EdgeInsets.all(8),
                     child: Icon(Icons.arrow_back, color: context.colors.textPrimary),
                   ),
@@ -44,13 +60,19 @@ class CityPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Paris', style: AppTextStyles.headlineLarge.copyWith(color: context.colors.textPrimary)),
+                      Text(
+                        'Salar de Uyuni',
+                        style: AppTextStyles.headlineLarge.copyWith(color: context.colors.textPrimary),
+                      ),
                       const SizedBox(height: AppDimens.spacingXs),
                       Row(
                         children: [
                           Icon(Icons.location_on, size: 16, color: context.colors.textSecondary),
                           const SizedBox(width: 4),
-                          Text('France', style: AppTextStyles.bodyMedium.copyWith(color: context.colors.textSecondary)),
+                          Text(
+                            'Bolivia',
+                            style: AppTextStyles.bodyMedium.copyWith(color: context.colors.textSecondary),
+                          ),
                         ],
                       ),
                     ],
@@ -67,7 +89,7 @@ class CityPage extends StatelessWidget {
                       Text('About', style: AppTextStyles.titleMedium.copyWith(color: context.colors.textPrimary)),
                       const SizedBox(height: AppDimens.spacingSmall),
                       Text(
-                        'The City of Light enchants visitors with its timeless beauty, world-class museums, and romantic atmosphere.',
+                        'The Salar de Uyuni is the world\'s largest salt flat, covering over 10,000 square kilometers. Located at 3,656 meters above sea level in southwestern Bolivia, it creates a surreal landscape of white, hexagonal salt formations and offers breathtaking reflections during the rainy season.',
                         style: AppTextStyles.bodyMedium.copyWith(color: context.colors.textSecondary),
                       ),
                     ],
@@ -97,7 +119,7 @@ class CityPage extends StatelessWidget {
                       ),
                       const SizedBox(height: AppDimens.spacingSmall),
                       Text(
-                        'Paris is best explored on foot or by metro. Spring (April-June) and fall (September-November) offer the best weather. Don\'t miss the sunset from Sacré-Cœur and try authentic French pastries at local boulangeries.',
+                        'Best visited during the dry season (May-October) for clear skies and better access. The rainy season (December-March) creates spectacular mirror reflections. Tours typically last 3-4 days and depart from the town of Uyuni. Bring high SPF sunscreen and altitude sickness medication.',
                         style: AppTextStyles.bodyMedium.copyWith(color: context.colors.textSecondary),
                       ),
                     ],
@@ -112,30 +134,43 @@ class CityPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: AppDimens.spacingSmall),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacingMedium),
-                  child: Column(
+                SizedBox(
+                  height: 220,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacingMedium),
                     children: [
-                      _ActivityItem(
-                        title: 'Eiffel Tower',
-                        description: 'Iconic iron lattice tower and symbol of Paris',
-                        tag: 'Attraction',
-                        tagColor: const Color(0xFFE53935),
+                      _ActivityCarouselItem(
+                        title: 'Uyuni Salt Flats',
+                        description: 'World\'s largest salt flat with mirror reflections',
+                        tag: 'Natural Wonder',
+                        tagColor: const Color(0xFF00796B),
+                        imageUrl: kIsWeb
+                            ? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop'
+                            : 'https://cdn.getyourguide.com/image/format=auto,fit=crop,gravity=auto,quality=60,height=650,dpr=1/tour_img/4244c5dce31a58345390a8aaea197a4b941ed9e4cb98ee853637615457449284.jpg',
                         onTap: () => context.push(AppRoutes.activity),
                       ),
-                      const SizedBox(height: AppDimens.spacingSmall),
-                      _ActivityItem(
-                        title: 'Louvre Museum',
-                        description: 'World\'s largest art museum',
+                      const SizedBox(width: AppDimens.spacingMedium),
+                      _ActivityCarouselItem(
+                        title: 'Salt Sculpture Museum',
+                        description: 'Museum built entirely from salt blocks',
                         tag: 'Museum',
                         tagColor: const Color(0xFF7C4DFF),
+                        imageUrl: kIsWeb
+                            ? 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=600&h=400&fit=crop'
+                            : 'https://one-million-places.com/wp-content/uploads/2015/bolivien/uyuni-eisenbahnfriedhof-13.jpg',
+                        onTap: () => context.push(AppRoutes.activity),
                       ),
-                      const SizedBox(height: AppDimens.spacingSmall),
-                      _ActivityItem(
-                        title: 'Notre-Dame Cathedral',
-                        description: 'Medieval Gothic cathedral',
-                        tag: 'Attraction',
+                      const SizedBox(width: AppDimens.spacingMedium),
+                      _ActivityCarouselItem(
+                        title: 'Valle de Rocas',
+                        description: 'Stone valley with otherworldly rock formations',
+                        tag: 'Scenic Spot',
                         tagColor: const Color(0xFFE53935),
+                        imageUrl: kIsWeb
+                            ? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=600&h=400&fit=crop'
+                            : 'https://www.dejarlotodoparaviajar.com/wp-content/uploads/2018/04/Desierto-Uyuni.jpg',
+                        onTap: () => context.push(AppRoutes.activity),
                       ),
                     ],
                   ),
@@ -185,54 +220,90 @@ class CityPage extends StatelessWidget {
   }
 }
 
-class _ActivityItem extends StatelessWidget {
+class _ActivityCarouselItem extends StatelessWidget {
   final String title;
   final String description;
   final String tag;
   final Color tagColor;
+  final String imageUrl;
   final void Function()? onTap;
 
-  const _ActivityItem({
+  const _ActivityCarouselItem({
     required this.title,
-    this.onTap,
     required this.description,
     required this.tag,
     required this.tagColor,
+    required this.imageUrl,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(AppDimens.spacingSmall),
-      decoration: BoxDecoration(
-        color: context.colors.surfaceSoft,
-        borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
-        border: Border(left: BorderSide(color: tagColor, width: 4)),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(title, style: AppTextStyles.titleSmall.copyWith(color: context.colors.textPrimary)),
+    return GestureDetector(
+      onTap: onTap,
+      child: SizedBox(
+        width: 280,
+        height: 220,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
+          child: Stack(
+            children: [
+              // Background Image
+              Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(image: NetworkImage(imageUrl), fit: BoxFit.cover),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(color: tagColor.withOpacity(0.1), borderRadius: BorderRadius.circular(4)),
-                  child: Text(
-                    tag,
-                    style: AppTextStyles.labelSmall.copyWith(color: tagColor, fontWeight: FontWeight.w600),
+              ),
+              // Gradient Overlay
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Text(description, style: AppTextStyles.bodySmall.copyWith(color: context.colors.textSecondary)),
-          ],
+              ),
+              // Content
+              Padding(
+                padding: const EdgeInsets.all(AppDimens.spacingMedium),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Tag at the top
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(color: tagColor, borderRadius: BorderRadius.circular(4)),
+                      child: Text(
+                        tag,
+                        style: AppTextStyles.labelSmall.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                    // Title and Description at the bottom
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: AppTextStyles.titleMedium.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          description,
+                          style: AppTextStyles.bodySmall.copyWith(color: Colors.white70),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
