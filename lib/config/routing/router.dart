@@ -14,20 +14,23 @@ class AppRouter {
   static GoRouter get router => GoRouter(
     initialLocation: AppRoutes.home,
     routes: [
-      StatefulShellRoute.indexedStack(
-        builder: (context, state, navigationShell) => DashboardShell(navigationShell: navigationShell),
-        branches: [
-          StatefulShellBranch(
-            routes: [GoRoute(path: AppRoutes.home, builder: (_, __) => const HomePage())],
-          ),
-          StatefulShellBranch(
-            routes: [GoRoute(path: AppRoutes.city, builder: (_, __) => const CityPage())],
-          ),
-          StatefulShellBranch(
-            routes: [GoRoute(path: AppRoutes.activity, builder: (_, __) => const ActivityPage())],
-          ),
-        ],
-      ),
+      GoRoute(path: AppRoutes.home, builder: (_, __) => const HomePage()),
+      GoRoute(path: AppRoutes.city, builder: (_, __) => const CityPage()),
+      GoRoute(path: AppRoutes.activity, builder: (_, __) => const ActivityPage()),
+      // StatefulShellRoute.indexedStack(
+      //   builder: (context, state, navigationShell) => DashboardShell(navigationShell: navigationShell),
+      //   branches: [
+      //     StatefulShellBranch(
+      //       routes: [GoRoute(path: AppRoutes.home, builder: (_, __) => const HomePage())],
+      //     ),
+      //     StatefulShellBranch(
+      //       routes: [GoRoute(path: AppRoutes.city, builder: (_, __) => const CityPage())],
+      //     ),
+      //     StatefulShellBranch(
+      //       routes: [GoRoute(path: AppRoutes.activity, builder: (_, __) => const ActivityPage())],
+      //     ),
+      //   ],
+      // ),
     ],
   );
 }

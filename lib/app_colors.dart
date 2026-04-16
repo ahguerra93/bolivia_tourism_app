@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 abstract final class AppColors {
   // Brand colors - Bolivia Tourism App
+  // static const Color primary = Color.fromRGBO(13, 179, 119, 1.0);
+  // static const Color primary = Color.fromRGBO(35, 106, 77, 1.0);
   static const Color primary = Color(0xFF648050);
   static const Color primaryDark = Color(0xFF4A603A);
   static const Color primaryContainer = Color(0xFFA5B88A);
