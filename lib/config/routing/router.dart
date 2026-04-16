@@ -12,50 +12,30 @@ class AppRoutes {
 
 class AppRouter {
   static GoRouter get router => GoRouter(
-        initialLocation: AppRoutes.home,
-        routes: [
-          StatefulShellRoute.indexedStack(
-            builder: (context, state, navigationShell) => DashboardShell(
-              navigationShell: navigationShell,
-            ),
-            branches: [
-              StatefulShellBranch(
-                routes: [
-                  GoRoute(
-                    path: AppRoutes.home,
-                    builder: (_, __) => const HomePage(),
-                  ),
-                ],
-              ),
-              StatefulShellBranch(
-                routes: [
-                  GoRoute(
-                    path: AppRoutes.city,
-                    builder: (_, __) => const CityPage(),
-                  ),
-                ],
-              ),
-              StatefulShellBranch(
-                routes: [
-                  GoRoute(
-                    path: AppRoutes.activity,
-                    builder: (_, __) => const ActivityPage(),
-                  ),
-                ],
-              ),
-            ],
+    initialLocation: AppRoutes.home,
+    routes: [
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) => DashboardShell(navigationShell: navigationShell),
+        branches: [
+          StatefulShellBranch(
+            routes: [GoRoute(path: AppRoutes.home, builder: (_, __) => const HomePage())],
+          ),
+          StatefulShellBranch(
+            routes: [GoRoute(path: AppRoutes.city, builder: (_, __) => const CityPage())],
+          ),
+          StatefulShellBranch(
+            routes: [GoRoute(path: AppRoutes.activity, builder: (_, __) => const ActivityPage())],
           ),
         ],
-      );
+      ),
+    ],
+  );
 }
 
 class DashboardShell extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
 
-  const DashboardShell({
-    super.key,
-    required this.navigationShell,
-  });
+  const DashboardShell({super.key, required this.navigationShell});
 
   @override
   Widget build(BuildContext context) {
@@ -63,20 +43,11 @@ class DashboardShell extends StatelessWidget {
       body: navigationShell,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: navigationShell.currentIndex,
-        onTap: navigationShell.gotoBranch,
+        onTap: (index) => navigationShell.goBranch(index, initialLocation: index == navigationShell.currentIndex),
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.location_city),
-            label: 'Cities',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Activities',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.location_city), label: 'Cities'),
+          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Activities'),
         ],
       ),
     );
