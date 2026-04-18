@@ -1,8 +1,8 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
-import '../../features/home/presentation/pages/home_page.dart';
-import '../../features/city/presentation/pages/city_page.dart';
-import '../../features/activity/presentation/pages/activity_page.dart';
+import '../../features/home/presentation/wrappers/home_page_wrapper.dart';
+import '../../features/city/presentation/wrappers/city_page_wrapper.dart';
+import '../../features/activity/presentation/wrappers/activity_page_wrapper.dart';
 
 class AppRoutes {
   static const String home = '/home';
@@ -15,8 +15,20 @@ class AppRouter {
     initialLocation: AppRoutes.home,
     routes: [
       GoRoute(path: AppRoutes.home, builder: (_, __) => const HomePage()),
-      GoRoute(path: AppRoutes.city, builder: (_, __) => const CityPage()),
-      GoRoute(path: AppRoutes.activity, builder: (_, __) => const ActivityPage()),
+      GoRoute(
+        path: '${AppRoutes.city}/:destinationId',
+        builder: (_, state) {
+          final destinationId = state.pathParameters['destinationId'] ?? 'dest_1';
+          return CityPage(destinationId: destinationId);
+        },
+      ),
+      GoRoute(
+        path: '${AppRoutes.activity}/:experienceId',
+        builder: (_, state) {
+          final experienceId = state.pathParameters['experienceId'] ?? 'exp_1';
+          return ActivityPage(experienceId: experienceId);
+        },
+      ),
       // StatefulShellRoute.indexedStack(
       //   builder: (context, state, navigationShell) => DashboardShell(navigationShell: navigationShell),
       //   branches: [

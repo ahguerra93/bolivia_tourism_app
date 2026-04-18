@@ -1,17 +1,19 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../../../app_colors.dart';
 import '../../../../app_text_styles.dart';
 import '../../../../common/app_dimens.dart';
+import '../../data/models/experience_model.dart';
 
-class ActivityPage extends StatefulWidget {
-  const ActivityPage({super.key});
+class ActivityPageWidget extends StatefulWidget {
+  final ExperienceModel experience;
+
+  const ActivityPageWidget({super.key, required this.experience});
 
   @override
-  State<ActivityPage> createState() => _ActivityPageState();
+  State<ActivityPageWidget> createState() => _ActivityPageWidgetState();
 }
 
-class _ActivityPageState extends State<ActivityPage> {
+class _ActivityPageWidgetState extends State<ActivityPageWidget> {
   bool isFavorited = false;
 
   @override
@@ -22,38 +24,7 @@ class _ActivityPageState extends State<ActivityPage> {
         padding: EdgeInsets.zero,
         children: [
           // Hero Image
-          Stack(
-            children: [
-              Container(
-                height: 200,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: NetworkImage(
-                      kIsWeb
-                          ? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop'
-                          : 'https://cdn.getyourguide.com/image/format=auto,fit=crop,gravity=auto,quality=60,height=650,dpr=1/tour_img/4244c5dce31a58345390a8aaea197a4b941ed9e4cb98ee853637615457449284.jpg',
-                    ),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              Positioned(
-                top: MediaQuery.of(context).padding.top + AppDimens.spacingSmall,
-                left: AppDimens.spacingMedium,
-                child: GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: context.colors.background,
-                      borderRadius: BorderRadius.circular(50),
-                    ),
-                    padding: const EdgeInsets.all(8),
-                    child: Icon(Icons.arrow_back, color: context.colors.textPrimary),
-                  ),
-                ),
-              ),
-            ],
-          ),
+          _HeroImageWidget(imageUrl: widget.experience.imageUrl),
           // Activity Content
           Container(
             color: context.colors.background,
@@ -62,87 +33,55 @@ class _ActivityPageState extends State<ActivityPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Title and Favorite
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Uyuni Salt Flats',
-                            style: AppTextStyles.headlineLarge.copyWith(color: context.colors.textPrimary),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Salar de Uyuni, Bolivia',
-                            style: AppTextStyles.bodyMedium.copyWith(color: context.colors.textSecondary),
-                          ),
-                        ],
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => setState(() => isFavorited = !isFavorited),
-                      child: Icon(
-                        isFavorited ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorited ? Colors.red : context.colors.primary,
-                        size: 28,
-                      ),
-                    ),
-                  ],
+                _TitleAndFavoriteWidget(
+                  title: widget.experience.name,
+                  location: '${widget.experience.name}, Bolivia',
+                  isFavorited: isFavorited,
+                  onFavoriteToggle: () => setState(() => isFavorited = !isFavorited),
                 ),
                 const SizedBox(height: AppDimens.spacingMedium),
                 Text(
-                  'The world\'s largest salt flat with stunning mirror reflections and otherworldly landscapes',
+                  widget.experience.description,
                   style: AppTextStyles.bodyMedium.copyWith(color: context.colors.textSecondary),
                 ),
                 const SizedBox(height: AppDimens.spacingLarge),
                 // About Section
                 Text('About', style: AppTextStyles.titleLarge.copyWith(color: context.colors.textPrimary)),
                 const SizedBox(height: AppDimens.spacingSmall),
-                Container(
-                  padding: const EdgeInsets.all(AppDimens.spacingMedium),
-                  decoration: BoxDecoration(
-                    color: context.colors.surfaceSoft,
-                    borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
-                    border: Border.all(color: context.colors.border),
-                  ),
-                  child: Text(
-                    'The Salar de Uyuni is the world\'s largest salt flat, covering 10,582 square kilometers in southwestern Bolivia. Located at an elevation of 3,656 meters (12,000 feet) above sea level, it creates a surreal landscape of hexagonal salt formations. During the dry season, it appears as an endless white desert. During the rainy season (December-March), a thin layer of water transforms it into a giant mirror reflecting the sky, creating one of the most spectacular natural phenomena on Earth.',
-                    style: AppTextStyles.bodyMedium.copyWith(color: context.colors.textPrimary),
-                  ),
-                ),
+                _AboutCardWidget(description: widget.experience.description),
                 const SizedBox(height: AppDimens.spacingLarge),
                 // Things to Know Section
-                Text('Things to Know', style: AppTextStyles.titleLarge.copyWith(color: context.colors.textPrimary)),
                 const SizedBox(height: AppDimens.spacingSmall),
-                _InfoCard(
-                  icon: Icons.directions_transit,
-                  title: 'How to Get There',
-                  content:
-                      'Fly to La Paz or Cochabamba, then take a bus or tour to Uyuni (1-2 hours by air from La Paz). Most visitors join organized 3-4 day tours from the town of Uyuni. Accessible via main highways from La Paz and Chile.',
-                ),
-                const SizedBox(height: AppDimens.spacingSmall),
-                _InfoCard(
-                  icon: Icons.access_time,
-                  title: 'Best Time to Visit',
-                  content:
-                      'Dry season: May-October for clear skies and hexagonal salt formations. Rainy season: December-March for mirror reflections. Accessible year-round but conditions vary seasonally.',
-                ),
-                const SizedBox(height: AppDimens.spacingSmall),
-                _InfoCard(
-                  icon: Icons.local_offer,
-                  title: 'Tour Cost',
-                  content:
-                      'Typical 3-4 day tours: \$200-400 USD per person. Includes accommodation, meals, guide, and 4x4 transportation across the salt flat.',
-                ),
-                const SizedBox(height: AppDimens.spacingSmall),
-                _InfoCard(
-                  icon: Icons.phone,
-                  title: 'What to Bring',
-                  content:
-                      'High SPF sunscreen (100+), altitude sickness medication, warm clothing for cold nights, good hiking boots, and a camera for unforgettable photos.',
-                ),
+                if (widget.experience.experienceInfoModel.transportInstructions.isNotEmpty)
+                  _InfoCard(
+                    icon: Icons.directions_transit,
+                    title: 'How to Get There',
+                    content: widget.experience.experienceInfoModel.transportInstructions,
+                  ),
+                if (widget.experience.experienceInfoModel.bestSeason.isNotEmpty) ...[
+                  const SizedBox(height: AppDimens.spacingSmall),
+                  _InfoCard(
+                    icon: Icons.access_time,
+                    title: 'Best Time to Visit',
+                    content: widget.experience.experienceInfoModel.bestSeason,
+                  ),
+                ],
+                if (widget.experience.experienceInfoModel.currency.isNotEmpty) ...[
+                  const SizedBox(height: AppDimens.spacingSmall),
+                  _InfoCard(
+                    icon: Icons.local_offer,
+                    title: 'Currency & Cost',
+                    content: 'Currency: ${widget.experience.experienceInfoModel.currency}',
+                  ),
+                ],
+                if (widget.experience.experienceInfoModel.languages.isNotEmpty) ...[
+                  const SizedBox(height: AppDimens.spacingSmall),
+                  _InfoCard(
+                    icon: Icons.language,
+                    title: 'Languages',
+                    content: widget.experience.experienceInfoModel.languages.join(', '),
+                  ),
+                ],
                 const SizedBox(height: AppDimens.spacingMedium),
                 SizedBox(
                   width: double.infinity,
@@ -165,32 +104,122 @@ class _ActivityPageState extends State<ActivityPage> {
                 ),
                 const SizedBox(height: AppDimens.spacingLarge),
                 // Insider Tips Section
-                Text('Insider Tips', style: AppTextStyles.titleLarge.copyWith(color: context.colors.textPrimary)),
-                const SizedBox(height: AppDimens.spacingSmall),
-                _TipItem(number: '1', text: 'Acclimatize in La Paz for 1-2 days to adjust to the 3,656m altitude'),
-                const SizedBox(height: AppDimens.spacingSmall),
-                _TipItem(
-                  number: '2',
-                  text: 'Book tours with reputable agencies to ensure safety and quality experience',
-                ),
-                const SizedBox(height: AppDimens.spacingSmall),
-                _TipItem(number: '3', text: 'Start tours early in the morning to maximize daylight and catch sunrise'),
-                const SizedBox(height: AppDimens.spacingSmall),
-                _TipItem(
-                  number: '4',
-                  text: 'During rainy season, bring proper waterproof gear for the muddy conditions',
-                ),
-                const SizedBox(height: AppDimens.spacingSmall),
-                _TipItem(
-                  number: '5',
-                  text: 'Bring adequate water and snacks - the remote landscape offers little shelter',
-                ),
-                const SizedBox(height: AppDimens.spacingLarge),
+                if (widget.experience.experienceInfoModel.tips.isNotEmpty) ...[
+                  Text('Insider Tips', style: AppTextStyles.titleLarge.copyWith(color: context.colors.textPrimary)),
+                  const SizedBox(height: AppDimens.spacingSmall),
+                  ..._buildTipsWidgets(widget.experience.experienceInfoModel.tips),
+                  const SizedBox(height: AppDimens.spacingLarge),
+                ],
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  List<Widget> _buildTipsWidgets(List<String> tips) {
+    return tips
+        .asMap()
+        .entries
+        .expand(
+          (entry) => [
+            _TipItem(number: (entry.key + 1).toString(), text: entry.value),
+            if (entry.key < tips.length - 1) const SizedBox(height: AppDimens.spacingSmall),
+          ],
+        )
+        .toList();
+  }
+}
+
+class _HeroImageWidget extends StatelessWidget {
+  final String imageUrl;
+
+  const _HeroImageWidget({required this.imageUrl});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Container(
+          height: 200,
+          decoration: BoxDecoration(
+            image: DecorationImage(image: NetworkImage(imageUrl), fit: BoxFit.cover),
+          ),
+        ),
+        Positioned(
+          top: MediaQuery.of(context).padding.top + AppDimens.spacingSmall,
+          left: AppDimens.spacingMedium,
+          child: GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              decoration: BoxDecoration(color: context.colors.background, borderRadius: BorderRadius.circular(50)),
+              padding: const EdgeInsets.all(8),
+              child: Icon(Icons.arrow_back, color: context.colors.textPrimary),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _TitleAndFavoriteWidget extends StatelessWidget {
+  final String title;
+  final String location;
+  final bool isFavorited;
+  final VoidCallback onFavoriteToggle;
+
+  const _TitleAndFavoriteWidget({
+    required this.title,
+    required this.location,
+    required this.isFavorited,
+    required this.onFavoriteToggle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: AppTextStyles.headlineLarge.copyWith(color: context.colors.textPrimary)),
+              const SizedBox(height: 4),
+              Text(location, style: AppTextStyles.bodyMedium.copyWith(color: context.colors.textSecondary)),
+            ],
+          ),
+        ),
+        GestureDetector(
+          onTap: onFavoriteToggle,
+          child: Icon(
+            isFavorited ? Icons.favorite : Icons.favorite_border,
+            color: isFavorited ? Colors.red : context.colors.primary,
+            size: 28,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _AboutCardWidget extends StatelessWidget {
+  final String description;
+
+  const _AboutCardWidget({required this.description});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppDimens.spacingMedium),
+      decoration: BoxDecoration(
+        color: context.colors.surfaceSoft,
+        borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
+        border: Border.all(color: context.colors.border),
+      ),
+      child: Text(description, style: AppTextStyles.bodyMedium.copyWith(color: context.colors.textPrimary)),
     );
   }
 }
