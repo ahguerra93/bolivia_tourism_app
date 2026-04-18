@@ -1,15 +1,22 @@
 import 'package:bolivia_tourism_app/config/routing/router.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../app_colors.dart';
 import '../../../../app_text_styles.dart';
 import '../../../../common/app_dimens.dart';
+import '../../../activity/data/models/experience_model.dart';
+import '../../../city/data/models/destination_model.dart';
+import '../cubits/home_cubit.dart';
+import '../cubits/home_state.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class HomePageWidget extends StatelessWidget {
+  final List<DestinationModel> destinations;
+  final List<ExperienceModel> experiences;
+
+  const HomePageWidget({super.key, required this.destinations, required this.experiences});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +27,6 @@ class HomePage extends StatelessWidget {
         centerTitle: false,
         title: Row(
           mainAxisSize: MainAxisSize.min,
-          // spacing: 8,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Opacity(
@@ -42,7 +48,6 @@ class HomePage extends StatelessWidget {
             ),
           ],
         ),
-
         actions: [
           IconButton(
             icon: Icon(Icons.menu, color: context.colors.textPrimary),
@@ -50,7 +55,87 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView(
+      body: BlocListener<HomeCubit, HomeState>(
+        listener: (context, state) {
+          state.whenOrNull(
+            error: (message) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(message),
+                  action: SnackBarAction(label: 'Retry', onPressed: () => context.read<HomeCubit>().retryFetch()),
+                ),
+              );
+            },
+          );
+        },
+        child: BlocBuilder<HomeCubit, HomeState>(
+          builder: (context, state) {
+            return state.when(
+              initial: () => const _HomeLoadingWidget(),
+              loading: () => const _HomeLoadingWidget(),
+              refreshing: (data) => _HomeContentWidget(
+                destinations: data.destinations,
+                experiences: data.experiences,
+                isRefreshing: true,
+              ),
+              success: (data) => _HomeContentWidget(
+                destinations: data.destinations,
+                experiences: data.experiences,
+                isRefreshing: false,
+              ),
+              error: (message) => _HomeErrorWidget(message: message),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _HomeLoadingWidget extends StatelessWidget {
+  const _HomeLoadingWidget();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(child: CircularProgressIndicator());
+  }
+}
+
+class _HomeErrorWidget extends StatelessWidget {
+  final String message;
+
+  const _HomeErrorWidget({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.error_outline, size: 48, color: Colors.red),
+          const SizedBox(height: 16),
+          Text('Error loading data', style: AppTextStyles.titleMedium),
+          const SizedBox(height: 8),
+          Text(message, textAlign: TextAlign.center, style: AppTextStyles.bodySmall),
+          const SizedBox(height: 24),
+          ElevatedButton(onPressed: () => context.read<HomeCubit>().retryFetch(), child: const Text('Try Again')),
+        ],
+      ),
+    );
+  }
+}
+
+class _HomeContentWidget extends StatelessWidget {
+  final List<DestinationModel> destinations;
+  final List<ExperienceModel> experiences;
+  final bool isRefreshing;
+
+  const _HomeContentWidget({required this.destinations, required this.experiences, required this.isRefreshing});
+  @override
+  Widget build(BuildContext context) {
+    return RefreshIndicator(
+      onRefresh: () => context.read<HomeCubit>().refreshHomeData(),
+      child: ListView(
         padding: EdgeInsets.zero,
         children: [
           // Search Bar Section
@@ -69,13 +154,6 @@ class HomePage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Padding(
-                  //   padding: const EdgeInsets.only(top: AppDimens.spacingMedium),
-                  //   child: Text(
-                  //     'Discover Bolivia',
-                  //     style: AppTextStyles.headlineLarge.copyWith(color: context.colors.textPrimary),
-                  //   ),
-                  // ),
                   const SizedBox(height: AppDimens.spacingMedium),
                   TextField(
                     decoration: InputDecoration(
@@ -100,104 +178,71 @@ class HomePage extends StatelessWidget {
           ),
           const SizedBox(height: AppDimens.spacingMedium),
           // Experiences Section
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacingMedium),
-            child: Text(
-              'Experiences you can\'t miss',
-              style: AppTextStyles.titleLarge.copyWith(color: context.colors.textPrimary),
-            ),
-          ),
-          const SizedBox(height: AppDimens.spacingMedium),
-          SizedBox(
-            height: 220,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
+          if (experiences.isNotEmpty) ...[
+            Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacingMedium),
-              children: [
-                _ExperienceCarouselItem(
-                  title: 'Uyuni Salt Flats',
-                  description: 'World\'s largest salt flat',
-                  tag: 'Natural Wonder',
-                  tagColor: const Color(0xFF00796B),
-                  onTap: () => context.push(AppRoutes.activity),
-                  imageUrl: kIsWeb
-                      ? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop'
-                      : 'https://cdn.getyourguide.com/image/format=auto,fit=crop,gravity=auto,quality=60,height=650,dpr=1/tour_img/4244c5dce31a58345390a8aaea197a4b941ed9e4cb98ee853637615457449284.jpg',
-                ),
-                const SizedBox(width: AppDimens.spacingMedium),
-                _ExperienceCarouselItem(
-                  title: 'Salt Sculpture Museum',
-                  description: 'Museum built from salt',
-                  tag: 'Museum',
-                  tagColor: const Color(0xFF7C4DFF),
-                  imageUrl: kIsWeb
-                      ? 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=600&h=400&fit=crop'
-                      : 'https://one-million-places.com/wp-content/uploads/2015/bolivien/uyuni-eisenbahnfriedhof-13.jpg',
-                ),
-                const SizedBox(width: AppDimens.spacingMedium),
-                _ExperienceCarouselItem(
-                  title: 'Valle de Rocas',
-                  description: 'Otherworldly rock formations',
-                  tag: 'Scenic Spot',
-                  tagColor: const Color(0xFFE53935),
-                  imageUrl: kIsWeb
-                      ? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=600&h=400&fit=crop'
-                      : 'https://www.dejarlotodoparaviajar.com/wp-content/uploads/2018/04/Desierto-Uyuni.jpg',
-                ),
-              ],
+              child: Text(
+                'Experiences you can\'t miss',
+                style: AppTextStyles.titleLarge.copyWith(color: context.colors.textPrimary),
+              ),
             ),
-          ),
-          const SizedBox(height: AppDimens.spacingLarge),
+            const SizedBox(height: AppDimens.spacingMedium),
+            SizedBox(
+              height: 220,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacingMedium),
+                children: experiences
+                    .asMap()
+                    .entries
+                    .expand(
+                      (entry) => [
+                        _ExperienceCarouselItem(
+                          title: entry.value.name,
+                          description: entry.value.description,
+                          tag: entry.value.type.toString().split('.').last,
+                          tagColor: const Color(0xFF00796B),
+                          onTap: () => context.push('${AppRoutes.activity}/${entry.value.id}'),
+                          imageUrl: entry.value.imageUrl,
+                        ),
+                        if (entry.key < experiences.length - 1) const SizedBox(width: AppDimens.spacingMedium),
+                      ],
+                    )
+                    .toList(),
+              ),
+            ),
+            const SizedBox(height: AppDimens.spacingLarge),
+          ],
           // Destinations Section
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacingMedium, vertical: AppDimens.spacingMedium),
-            child: Text('Destinations', style: AppTextStyles.titleLarge.copyWith(color: context.colors.textPrimary)),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacingMedium),
-            child: GridView.count(
-              crossAxisCount: 2,
-              mainAxisSpacing: AppDimens.spacingLarge,
-              crossAxisSpacing: AppDimens.spacingLarge,
-              childAspectRatio: 0.9,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              children: [
-                _DestinationGridItem(
-                  title: 'Salar de Uyuni',
-                  imageUrl:
-                      'https://i.natgeofe.com/n/857a969e-9fe6-4b5e-959f-157ad9fdf7f9/reflection-salar-de-uyuni-bolivia.jpg',
-                  onTap: () => context.push(AppRoutes.city),
-                ),
-                _DestinationGridItem(
-                  title: 'La Paz',
-                  imageUrl: kIsWeb
-                      ? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop'
-                      : 'https://unifranz.edu.bo/wp-content/uploads/2021/09/lapaz-vista-panorama.jpg',
-                ),
-                _DestinationGridItem(
-                  title: 'Santa Cruz',
-                  imageUrl: kIsWeb
-                      ? 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=400&h=400&fit=crop'
-                      : 'https://www.gmsantacruz.gob.bo/images/misio_vision.jpg',
-                ),
-                _DestinationGridItem(
-                  title: 'Tarija',
-                  imageUrl: kIsWeb
-                      ? 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=400&fit=crop'
-                      : 'https://www.tarija.bo/wp-content/uploads/2020/05/tarija-view.jpg',
-                ),
-                _DestinationGridItem(
-                  title: 'Oruro',
-                  imageUrl: 'https://images.unsplash.com/photo-1500595046891-fad8f32b3d0f?w=400&h=400&fit=crop',
-                ),
-                _DestinationGridItem(
-                  title: 'Cochabamba',
-                  imageUrl: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=400&h=400&fit=crop',
-                ),
-              ],
+          if (destinations.isNotEmpty) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppDimens.spacingMedium,
+                vertical: AppDimens.spacingMedium,
+              ),
+              child: Text('Destinations', style: AppTextStyles.titleLarge.copyWith(color: context.colors.textPrimary)),
             ),
-          ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppDimens.spacingMedium),
+              child: GridView.count(
+                crossAxisCount: 2,
+                mainAxisSpacing: AppDimens.spacingLarge,
+                crossAxisSpacing: AppDimens.spacingLarge,
+                childAspectRatio: 0.9,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                children: destinations
+                    .map(
+                      (destination) => _DestinationGridItem(
+                        title: destination.name,
+                        imageUrl: destination.imageUrl,
+                        onTap: () => context.push('${AppRoutes.city}/${destination.id}'),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -242,7 +287,7 @@ class _ExperienceCarouselItem extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
+                  colors: [Colors.transparent, Colors.black.withValues(alpha: 0.7)],
                 ),
               ),
             ),
@@ -325,7 +370,7 @@ class _DestinationGridItem extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
+                  colors: [Colors.transparent, Colors.black.withValues(alpha: 0.7)],
                 ),
               ),
             ),
